@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block denglu %}
+  <li><a href="/user/logout" >退出</a></li>
+{% endblock %}
+
+
+{% block css %}
+<style type="text/css">
+    #center{
+        width:750px;
+        margin:0 auto 100px;
+    }
+    input[name="tijiao"]{
+        width:60px;
+        height:30px;
+        outline: none;
+        border:1px solid #aaa;
+        border-radius:5px;
+        font-size:16px;
+        float:right;
+        margin: 0 30px;
+    }
+</style>
+{% endblock %}
+
+{% block sousuo %}
+
+{% endblock  %}
+
+{% block center %}
+    <div id="center">
+        <form action="/user/comment/" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p></p><br>
+            <p></p><br>
+            标题：<input type="text" name="title" style="width:300px;" ><br><br>
+            内容：<br><textarea name="content" id="content" cols="100" rows="10" style="resize:none"></textarea><br>
+{#            插入附件：<input style="margin-top:10px;" type="file" name="fujian"><br>#}
+            <br>
+            <br>
+            <input type="submit" name="tijiao" value="提交">
+        </form>
+    </div>
+{% endblock %}

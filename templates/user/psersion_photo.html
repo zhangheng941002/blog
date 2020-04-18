@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block denglu %}
+    <li><a href="/user/logout">退出</a></li>
+{% endblock %}
+
+{% block sousuo %}
+
+{% endblock %}
+
+
+{% block css %}
+    {% load static from staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'layui/css/layui.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
+    <style type="text/css">
+        {#.simp-bt{background: none repeat scroll 0 0 #00b7ee;border-radius: 3px;color: #fff;cursor: pointer;display: inline-block;float: left;font-size: 14px;margin-left: 80%;padding: 0 18px;position: relative;text-align: center;line-height: 34px;transition: background .2s;-moz-transition: background .2s;-webkit-transition: background .2s;-o-transition: background .2s;border: 0}#}
+
+        .page {
+            height: 70px;
+            overflow: hidden;
+            margin-top: 30px;
+        }
+
+        .page-box {
+            position: relative;
+        }
+
+        .page-box .pagination.page-ul {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .input-pag, .input-submit {
+            width: 40px;
+            height: 33px;
+            outline: none;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .input-pag {
+            width: 50px;
+            padding-left: 15px;
+        }
+
+        .user-name, .uname {
+            float: left;
+        }
+
+
+    </style>
+{% endblock %}
+
+{% block center %}
+
+    <div style="overflow:hidden;margin-left:30px;">
+        <div class="user-name">个性签名：</div>
+        <div class="uname">{{ sign }}</div>
+        {#    <a href="/user/xgmm/" style="overflow:hidden;margin-left: 80%;font-size: larger; color: #00FF00" >上传图片</a>#}
+        <hr/>
+        <button class="simp-bt open-input" onClick="up_files($(this))">上传图片</button>
+        <div>
+            <button class="simp-bt do_upload" onClick="do_upload()">提交~</button>
+            <div class="clear"></div>
+        </div>
+
+
+    </div>
+
+
+    <div class="album-content w1000" id="layer-photos-demo" class="layer-photos-demo">
+        <div class="img-info">
+            <img src="../../static/img/xc_img1.jpg" alt="" height="400" width="700">
+            {#      <img src="../../static/img/new.jpg" alt="">#}
+            <div class="title">
+{#                <p class="data">今日上传<span>2018/10/10</span></p>#}
+                <p class="text">观赏最美的土耳其的日</p>
+            </div>
+        </div>
+        <div class="img-list">
+            <div class="layui-fluid" style="padding:0">
+                <div class="layui-row layui-col-space30 space">
+
+                    {% for each in page %}
+                        <div class="layui-col-xs12 layui-col-sm4 layui-col-md4">
+                            <div class="item">
+                                <a href="../../static/load/{{ each.img }}" target="_blank"><img src="../../static/load/{{ each.img }}" height="155.55" width="233.33"></a>
+                                <div class="cont-text">
+                                    <div class="data">{{ each.create_date }}</div>
+                                    <p class="delete"><i class="layui-icon layui-icon-delete" style="color: red"></i>&nbsp;&nbsp;&nbsp;&nbsp;<span><a
+                                            href="/user/delete_photo?id={{ each.id }}&page={{ now_page }}" style="text-decoration:none; color: red">删除图片</a></span></p>
+                                    <p class="briefly"><i class="layui-icon layui-icon-picture" style="color: #00F7DE"></i>&nbsp;&nbsp;&nbsp;&nbsp;<a href="../../static/load/{{ each.img }}" target="_blank" style="text-decoration:none;">查看原图</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+
+                </div>
+            </div>
+            <div id="demo"></div>
+        </div>
+    </div>
+
+
+    <div class="page">
+        <nav aria-label="Page navigation" class="page-box">
+
+            <ul class="pagination page-ul">
+                <li>
+                    <a href="1" aria-label="Previous">
+                        <span aria-hidden="true">第一页</span>
+                    </a>
+                </li>
+                {% for index in page.paginator.page_range %}
+                    {% if index <= 10 %}
+                        <li><a href="{{ index }}">{{ index }}</a></li>
+
+                    {% endif %}
+                {% endfor %}
+
+                <li>
+                    <a href="{{ last }}" aria-label="Next">
+                        <span aria-hidden="true">尾页</span>
+                    </a>
+
+                </li>
+                <div style="float: left">
+                    <form action="/user/photo/" method="get">
+                        &nbsp;
+                        <input class="input-pag" type="text" name="input_page">
+                        <input class="input-submit" type="submit" value="跳转">
+
+                    </form>
+                </div>
+            </ul>
+
+        </nav>
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+    {% if tk %}
+    <script type="text/javascript">
+    $('<div>').appendTo('body').addClass('alert alert-success').html('操作成功').show().delay(2000).fadeOut(2000);
+    {% endif %}
+    </script>
+{% endblock %}

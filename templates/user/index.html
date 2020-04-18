@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+{% block denglu %}
+    <li><a href="/user/logout">退出</a></li>
+{% endblock %}
+
+{% block sousuo %}
+
+{% endblock %}
+{% block css %}
+    <style type="text/css">
+
+        .container {
+            width: 1000px;
+        }
+
+        .commentbox {
+            width: 900px;
+            margin: 20px auto;
+        }
+
+        .mytextarea {
+            width: 100%;
+            overflow: auto;
+            word-break: break-all;
+            height: 100px;
+            color: #000;
+            font-size: 1em;
+            resize: none;
+        }
+
+        .comment-list {
+            width: 900px;
+            margin: 20px auto;
+            clear: both;
+            padding-top: 20px;
+        }
+
+        .comment-list .comment-info {
+            position: relative;
+            margin-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .comment-list .comment-info header {
+            width: 10%;
+            position: absolute;
+        }
+
+        .comment-list .comment-info header img {
+            width: 100%;
+            border-radius: 50%;
+            padding: 5px;
+        }
+
+        .comment-list .comment-info .comment-right {
+            padding: 5px 0px 5px 11%;
+        }
+
+        .comment-list .comment-info .comment-right h3 {
+            margin: 5px 0px;
+        }
+
+        .comment-list .comment-info .comment-right .comment-content-header {
+            height: 25px;
+        }
+
+        .comment-list .comment-info .comment-right .comment-content-header span, .comment-list .comment-info .comment-right .comment-content-footer span {
+            padding-right: 2em;
+            color: #aaa;
+        }
+
+        .comment-list .comment-info .comment-right .comment-content-header span, .comment-list .comment-info .comment-right .comment-content-footer span.reply-btn, .send, .reply-list-btn {
+            cursor: pointer;
+        }
+
+        .comment-list .comment-info .comment-right .reply-list {
+            border-left: 3px solid #ccc;
+            padding-left: 7px;
+        }
+
+        .comment-list .comment-info .comment-right .reply-list .reply {
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .comment-list .comment-info .comment-right .reply-list .reply div span {
+            padding-left: 10px;
+        }
+
+        .comment-list .comment-info .comment-right .reply-list .reply p span {
+            padding-right: 2em;
+            color: #aaa;
+        }
+
+        .show-info .ula, .show-info .chuli, .show-info .jieguo {
+            display: inline-block;
+            width: 33%;
+            text-indent: 2em;
+        }
+
+        .ul-box {
+            height: 35px;
+            background: #eee;
+            line-height: 35px;
+            margin-top: 10px;
+        }
+
+        .ul-box div {
+            width: 33%;
+            float: left;
+            text-indent: 2em;
+        }
+
+        .page {
+            height: 70px;
+            overflow: hidden;
+            margin-top: 30px;
+        }
+
+        .page-box {
+            position: relative;
+        }
+
+        .page-box .pagination.page-ul {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .input-pag, .input-submit {
+            width: 40px;
+            height: 33px;
+            outline: none;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .input-pag {
+            width: 50px;
+            padding-left: 15px;
+        }
+
+        .user-name, .uname {
+            float: left;
+        }
+
+        .xgmm {
+            margin-left: 30px;
+            line-height: 35px;
+        }
+
+    </style>
+{% endblock %}
+
+{% block center %}
+    <div class="clear"></div>
+    <div class="container">
+        <div class="commentbox">
+            <textarea cols="80" rows="50" placeholder="来说几句吧......" class="mytextarea" id="content"></textarea>
+            <div class="btn btn-info pull-right" id="comment" onclick="send_msg()">发表</div>
+        </div>
+        <div class="comment-list">
+
+        </div>
+    </div>
+
+    <div class="page">
+        <nav aria-label="Page navigation" class="page-box">
+
+            <ul class="pagination page-ul">
+                <li>
+                    <a href="1" aria-label="Previous">
+                        <span aria-hidden="true">第一页</span>
+                    </a>
+                </li>
+                {% for index in page.paginator.page_range %}
+                    {% if index <= 10 %}
+                        <li><a href="{{ index }}">{{ index }}</a></li>
+
+                    {% endif %}
+                {% endfor %}
+
+                <li>
+                    <a href="{{ last }}" aria-label="Next">
+                        <span aria-hidden="true">尾页</span>
+                    </a>
+
+                </li>
+                <div style="float: left">
+                    <form action="/user/school_conment/" method="get">
+                        &nbsp;
+                        <input class="input-pag" type="text" name="input_page">
+                        <input class="input-submit" type="submit" value="跳转">
+
+                    </form>
+                </div>
+            </ul>
+
+        </nav>
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+
+
+    <script type="text/javascript">
+        //初始化数据
+        var arr = [];
+        var ss = {{ data|safe }};
+        for (var i = 0; i < ss.length; i++) {
+            console.log('----------------', ss[i]);
+            arr.push({
+                id: ss[i].id,
+                replyName: ss[i].user_name,
+                beReplyName: "",
+                content: ss[i].comments,
+                time: ss[i].create_date,
+                {#address: "深圳",#}
+                osname: "",
+                {#browse: "谷歌",#}
+                replyBody: []
+
+            })
+        }
+
+        $(function () {
+            $(".comment-list").addCommentList({data: arr, add: ""});
+            $("#comment").click(function () {
+                var obj = new Object();
+                obj.img = "../../static/img/img.jpg";
+                obj.replyName = "匿名";
+                obj.content = $("#content").val();
+                obj.browse = "深圳";
+                obj.osname = "win10";
+                obj.replyBody = "";
+                {#$(".comment-list").addCommentList({data: [], add: obj});#}
+            });
+        })
+
+        function success(data) {
+        console.log('----------------', data.status);
+        if (data.status==1){
+            // $('.alert').html(data.msg).addClass('alert-success').show().delay(1500).fadeOut();
+            $('<div>').appendTo('body').addClass('alert alert-success').html('操作成功').show().delay(1000).fadeOut().delay(3000);
+            // alert();
+            location.reload();
+        }else if(data.status==-1){
+            alert(data.msg)
+        }
+        else {
+            alert("图片上传失败")
+        }
+
+}
+
+        function send_msg() {
+            msg = $("textarea").val();
+            console.log('-------111111----------', msg);
+            if (msg == null || msg == "") {
+                alert("发表内容不能为空！")
+                location.reload();
+            } else {
+                $.ajax({
+                        url: '/user/update_school_comment',
+                        type: 'POST',
+                        data: {comment: msg},                    // 上传formdata封装的数据
+                        success: function (res) {           //成功回调
+                            success(res, "", function () {
+                            })
+                        }
+                    }
+                )
+            }
+        }
+
+    </script>
+{% endblock %}

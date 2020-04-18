@@ -1,0 +1,54 @@
+body{font-size: 13px;background: #eee}
+h1{text-align: center;}
+/*按钮样式*/
+.simp-bt{background: none repeat scroll 0 0 #00b7ee;border-radius: 3px;color: #fff;cursor: pointer;display: inline-block;float: left;font-size: 14px;margin-left: 10px;padding: 0 18px;position: relative;text-align: center;line-height: 34px;transition: background .2s;-moz-transition: background .2s;-webkit-transition: background .2s;-o-transition: background .2s;border: 0}
+.add-more{background: none repeat scroll 0 0 #b700cc}
+.do_upload{background: none repeat scroll 0 0 #00b300;float: right}
+.del-input{background: none repeat scroll 0 0 #ff0000}
+
+/*伪类*/
+.up_done:hover{background:none repeat scroll 0 0 #00a2d4}
+.continue_upload:hover{background:none repeat scroll 0 0 #eee}
+.open-input:hover{background:none repeat scroll 0 0 #00a2d4}
+.del-input:hover{background:none repeat scroll 0 0 #ee0000}
+.add-more:hover{background:none repeat scroll 0 0 #a777cc}
+.do_upload:hover{background:none repeat scroll 0 0 #00aa00}
+/*button end*/
+
+.bar-hide{background: rgba(0,0,0,.5);position: fixed;right: 0;bottom: 0;left: 0;top: 0;opacity: 0;z-index: 1;}
+.modal{display: none;}
+
+.modal-content{z-index: 2;position: fixed;border-width: 1px 1px 2px;border-style: solid;border-color: #ccc #ccc #ddd;background-color: #fbfbfb;width: 50%;margin-left:auto;margin-right:auto;left: 0;right: 0;opacity: 0;top: 30px;}
+
+.file-reader{padding: 1em;}
+.add-more{margin-left: 5px}
+.input-click{background: url(../img/add_img.png) no-repeat scroll center 5px transparent;border: 1px dashed #e6e6e6;color: #ccc;font-size: 18px;padding-top: 77px;position: relative;text-align: center;top: 0;}
+#fileImg{display: none}
+.chose-file{background: none repeat scroll 0 0 #00b7ee;border-radius: 3px;box-shadow: 0 1px 1px rgba(0,0,0,.1);color: #fff;cursor: pointer;display: inline-block;font-size: 18px;height: 44px;line-height: 44px;width: 90%;min-width: 120px;margin: 0 auto;overflow: hidden;transition: background .2s;-moz-transition: background .2s;-webkit-transition: background .2s;-o-transition: background .2s;}
+.chose-file:hover{background:none repeat scroll 0 0 #00a2d4}
+
+/*图片浏览 结果集*/
+#result{border-top: 1px solid #dadada;height: 45px;line-height: 45px;padding: 0 10px;position: relative;vertical-align: middle;background-color: #fff;}
+#result_info{float: left;color: #666;display: inline-block;}
+#result-btn{position: absolute;right: 16px;line-height: 30px;top: 6px;}
+.continue_upload{background: none repeat scroll 0 0 #fff;border: 1px solid #cfcfcf;border-radius: 3px;color: #565656;cursor: pointer;display: inline-block;float: left;font-size: 14px;margin-left: 10px;padding: 0 18px;position: relative;text-align: center;line-height: 32px;transition: border .2s;-moz-transition: border .2s;-webkit-transition: border .2s;-o-transition: border .2s;}
+
+
+.uploadImg{margin: 0 auto}
+
+.load_preview{border-top: 1px solid #d2d2d2;border-bottom: 1px solid #bbb;background-color: #fff;overflow: hidden;}
+.file-append{height: 100%;margin: 1em;float: left;position: relative;}
+.del-temp-file{margin: 0;left: 0;right: 0;position: absolute;top: 0;height: 0;padding: 0;margin: 0;opacity: .8;color: #fff;background: none repeat scroll 0 0 #000;transition: all .5s;-moz-transition: all .5s;-webkit-transition: all .5s;-o-transition: all .5s;overflow: hidden;}
+.del-temp-file-hover{cursor: pointer;height: 30px}
+.file_name{margin: 0;white-space: nowrap;width: 66%;overflow: hidden;-o-text-overflow: ellipsis;text-overflow: ellipsis;float: left;}
+.file_del{background: url(../img/delete_white.png) no-repeat scroll 0 0 transparent;width: 18px;height: 18px;display: inline;-moz-user-select: none;position: absolute;right: 3px;margin-top: 4px;}
+.file-append a{display: table-cell;text-align: center;vertical-align: middle;border: 1px solid #dfdfdf;background: url(../img/bg.png) no-repeat scroll center 0 transparent;
+}
+.upload-file{border: 0;max-width: 100%!important;height: auto!important;vertical-align: middle;}
+.upload_fail{display: none;margin: 0;position: absolute;bottom: 0;height: 24px;left: 0;right: 0;background: none repeat scroll 0 0 red;color: #fff;text-align: center;}
+.upload_success{display: none;margin: 0;position: absolute;bottom: 0;height: 40px;left: 0;right: 0;background: url(../img/success.png) no-repeat scroll right bottom transparent;}
+
+.btn-control button{margin: 5px}
+.clear{clear: both;content: ''}
+
+/*样式参考来源  http://www.jq22.com/jquery-info1845*/
