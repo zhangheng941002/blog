@@ -6,27 +6,15 @@
 {% block sousuo %}
 
 {% endblock %}
+
 {% block js %}
+    {% if tk %}
     <script type="text/javascript">
-        var sug_val = document.querySelectorAll(".chuli .sug-val");
-        var yes = document.querySelectorAll(".chuli .yes");
-        var sug_val_j = document.querySelectorAll(".jieguo .sug-val");
-        var yes_j = document.querySelectorAll(".jieguo .yes");
-
-        for (var i = 0; i < sug_val.length; i++) {
-
-            yes[i].value = (sug_val[i].value === "True") ? "已审批" : "未审批";
-            /*if(sug_val[i].value === "True"){
-              yes[i].value = "已审批";
-            }else{
-              yes[i].value = "未审批";
-            }*/
-            yes_j[i].value = (sug_val_j[i].value === "True") ? "已通过" : "未通过";
-
-        }
-
+    $('<div>').appendTo('body').addClass('alert alert-success').html('操作成功').show().delay(2000).fadeOut(2000);
+    {% endif %}
     </script>
 {% endblock %}
+
 
 {% block css %}
     <style type="text/css">
@@ -131,7 +119,7 @@
 
             <div class="chuli">
 
-                <a href="" style="text-decoration:none; color: red">删除日志</a>
+                <a href="/user/delete_comments?id={{ sug.id }}&page={{ now_page }}" style="text-decoration:none; color: red">删除日志</a>
 
 
             </div>
@@ -139,6 +127,7 @@
 
         {% endfor %}
     </div>
+    <div id="demo"></div>
     <div class="page">
         <nav aria-label="Page navigation" class="page-box">
 

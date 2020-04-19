@@ -25,10 +25,7 @@ admin.site.index_title = '欢迎登陆'
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^user/', include('user.urls')),
-    # url(r'^(\d*)$',page),
-    # url(r'^$',shouye),
     url(r'^(\d*)$',ucenter),
-    url(r'^sug/',include('sug.urls')),
     url(r'^show_info/(\d+)/',show_info),
     url(r'select/(\d*)',select),
     url(r'^sousuo$',sousuo),

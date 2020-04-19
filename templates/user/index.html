@@ -240,17 +240,14 @@
         })
 
         function success(data) {
-        console.log('----------------', data.status);
         if (data.status==1){
-            // $('.alert').html(data.msg).addClass('alert-success').show().delay(1500).fadeOut();
             $('<div>').appendTo('body').addClass('alert alert-success').html('操作成功').show().delay(1000).fadeOut().delay(3000);
-            // alert();
             location.reload();
         }else if(data.status==-1){
             alert(data.msg)
         }
         else {
-            alert("图片上传失败")
+            alert("请联系管理员绑定你的班级！")
         }
 
 }

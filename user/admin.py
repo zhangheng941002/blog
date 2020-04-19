@@ -19,26 +19,20 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class SchoolAdmin(admin.ModelAdmin):
-    # show info
     list_display = ['id', 'school_name', 'comment']
 
-    # every page show 10 info
     list_per_page = 10
 
 
 class ClassInfoAdmin(admin.ModelAdmin):
-    # show info
     list_display = ['id', 'class_name', 'school_name']
 
-    # every page show 10 info
     list_per_page = 10
 
 
 class PhotoAdmin(admin.ModelAdmin):
-    # show info
     list_display = ['user_name', 'image_data','class_name', 'create_date']
 
-    # every page show 10 info
     list_per_page = 10
 
     search_fields = ("user_name",)
@@ -48,20 +42,16 @@ class PhotoAdmin(admin.ModelAdmin):
 
 
 class CommentAdmin(admin.ModelAdmin):
-    # show info
     list_display = ['title', 'user_name', 'comment', 'create_date']
 
-    # every page show 10 info
     list_per_page = 10
 
     search_fields = ("user_name",)
 
 
 class SchoolCommentAdmin(admin.ModelAdmin):
-    # show info
     list_display = ['user_name', 'comment', 'create_date']
 
-    # every page show 10 info
     list_per_page = 10
 
     search_fields = ("user_name",)

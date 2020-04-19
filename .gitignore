@@ -1,0 +1,6 @@
+.idea/*
+static/load/*
+log/*
+*.pyc
+*.xml
+*.iml

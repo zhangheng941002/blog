@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^photo/upload/$', upload),
     url(r'^class_photo/upload/$', class_upload),
     url(r'^delete_photo', delete_photo),
+    url(r'^delete_comments', delete_comments),
     url(r'^delete_class_photo', delete_class_photo),
     url(r'^update_sign', update_sign),
     url(r'^school_conment/(\d*)$', school_conment),

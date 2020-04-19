@@ -4,8 +4,6 @@ from django.db.models import Q
 from django.conf import settings
 from user.models import *
 from django.core.paginator import Paginator  # 用于分页显示
-from suggest.views import shouye
-# 用于限制个人中心等的在登陆状态才能访问
 from user.islogin import islogin
 
 from django.http import JsonResponse
@@ -18,13 +16,10 @@ import datetime
 # 生成验证码
 def yanzhengma(request):
     import random
-    # 定义验证码的备选值
     str1 = 'ABCD123EFGHIJK456LMNOPQRS789TUVWXYZ0qwertyuiopasdfghjklzxcvbnm'
-    # 随机选取4个值作为验证码
     rand_str = ''
     for i in range(0, 4):
         rand_str += str1[random.randrange(0, len(str1))]
-    # return  rand_str
     request.session['rand_str'] = rand_str
     return JsonResponse({'st': rand_str})
 
@@ -36,7 +31,6 @@ def login(request):
 
     if request.method == "GET":
         return render(request, 'user/login.html')
-    # form 表单post请求过来的
 
     if request.method == "POST":
         username = request.POST.get('username')
@@ -45,9 +39,7 @@ def login(request):
         rand_str = request.session.get('rand_str')
         if yzm.upper() != rand_str.upper():
             return render(request, 'user/login.html', {'code': "验证码不正确", 'un': username, "pwd": password})
-        # 通过获得的username 和 password 跟数据库进行匹配
         if User.objects.filter(username=username, password=password):
-            # 验证通过，转到个人中心,并保存session,用于验证用户是否登陆
             request.session['username'] = username
             username = request.session.get('username')
             user = User.objects.get(username=username)
@@ -56,22 +48,17 @@ def login(request):
             request.session['class_num'] = user.class_num
             request.session['school_name'] = user.school_name
             request.session['sign'] = user.sign
-            put_url = request.COOKIES.get('url')
 
-            return render(request, 'shouye_dl.html', )
+            return redirect("/1")
 
         else:
-            # 验证不通过，重新渲染登陆页面
             if User.objects.filter(username=username):
-                # 密码错误
                 return render(request, 'user/login.html', {'ps': "用户名或密码不正确", 'un': username})
 
 
 # 退出登陆
 def logout(request):
     request.session.flush()
-
-    # return redirect(ucenter)
     return redirect("/1")
 
 
@@ -79,7 +66,6 @@ def logout(request):
 def register(request):
     if request.method == 'GET':
         return render(request, 'user/register.html')
-    # 是post请求那说明是从form表单中来的注册数据，进行数据库的用户插入
     if request.method == 'POST':
         request.session.flush()
         username = request.POST.get('username')
@@ -87,7 +73,6 @@ def register(request):
         password2 = request.POST.get('password2', None)
         email = request.POST.get('email')
 
-        # 后台的再次验证密码是防止黑客的，因为浏览器来的数据都是不可信的，因为这里是毕设就弄的复杂了，我们就默认浏览器来的数据是安全的
         resp_data = {"un": username, "em": email}
         if password != password2:
             resp_data["pwd_error"] = "两次密码不一致"
@@ -104,7 +89,6 @@ def register(request):
 
         u1 = User(username=username, password=password, email=email)
         u1.save()
-        # 注册成功后，跳到登陆页面,
         return render(request, 'user/success.html')
 
 
@@ -112,31 +96,22 @@ def register(request):
 def register_exist(requset):
     uname = requset.GET.get('uname')
     count = User.objects.filter(username=uname).count()
-    print(count)
     return JsonResponse({'count': count})
 
 
-# 广场
-# @islogin
 def ucenter(request, pageindex):
-    # 接受跳转输入的页数
     input_page = request.GET.get("input_page")
-    # print(input_page)
     if input_page:
         pageindex = int(input_page)
 
     user_id = request.session.get('id')
     if pageindex == '':
         pageindex = '1'
-    # 查询所有的创意
     list1 = Comment.objects.filter(status=1).order_by('-id')
-    # 创建一个paginator对象
     paginator = Paginator(list1, 10)
 
-    # 获取最后一页的页码
     last_page = len(paginator.page_range)
 
-    # 控制页面跳转时，用户的输入，<= 0 为第一页，>最大页，为最大页
     if int(pageindex) > last_page:
         pageindex = last_page
 
@@ -157,20 +132,48 @@ def ucenter(request, pageindex):
 @islogin
 def comments(request):
     if request.method == "POST":
-        # 标题
         title = request.POST.get("title")
-        # 内容
         content = request.POST.get('content')
-
-        # 通过session 中存的username 查找id,获取user对象,用于外键关联
         username = request.session.get('username')
         user_id = request.session.get('id')
 
         sug1 = Comment(title=title, user_id=user_id, comment=content, user_name=username)
         sug1.save()
 
-        # 把提交的优化存入数据库后，渲染提交成功的页面
         return render(request, 'sug/sug_success.html')
+
+
+@islogin
+def delete_comments(request):
+    id = request.GET.get("id")
+    page_num = request.GET.get("page")
+    user_id = request.session.get('id')
+
+    _comment = Comment.objects.filter(id=id, user_id=user_id, status=1)
+    if _comment.exists():
+        _comment.update(status=0)
+        tk = True
+    else:
+        tk = False
+    list1 = Comment.objects.filter(user_id=user_id, status=1).order_by('-id')
+
+    paginator = Paginator(list1, 9)
+    last_page = len(paginator.page_range)
+    if int(page_num) > last_page:
+        page_num = last_page
+    if int(page_num) <= 0:
+        page_num = 1
+
+    last_page = len(paginator.page_range)
+    page = paginator.page(int(page_num))
+
+    username = request.session.get('username')
+    class_num = request.session.get('class_num')
+    school_name = request.session.get('school_name')
+    sign = request.session.get('sign')
+    data = {'page': page, 'last': last_page, 'username': username, 'class_num': class_num,
+            'school_name': school_name, 'sign': sign, 'now_page': page_num, "tk": tk}
+    return render(request, 'user/user_center.html', data)
 
 
 # 发起合理化创意
@@ -179,12 +182,9 @@ def push_sug(request):
     return render(request, 'user/youhua.html')
 
 
-# 如果有附件，则下载
 def load(request):
-    # 获取附件的名字
     name = request.GET.get("ld")
 
-    # 服务器中附件的地址
     path = settings.MEDIA_ROOT + name
 
     def file_iterator(file_path, chunk_size=512):
@@ -203,12 +203,11 @@ def load(request):
                     break
 
     try:
-        # 设置响应头
-        # StreamingHttpResponse将文件内容进行流式传输，数据量大可以用这个方法
+
         response = StreamingHttpResponse(file_iterator(path))
-        # 以流的形式下载文件,这样可以实现任意格式的文件下载
+
         response['Content-Type'] = 'application/octet-stream'
-        # Content-Disposition就是当用户想把请求所得的内容存为一个文件的时候提供一个默认的文件名
+
         response['Content-Disposition'] = 'attachment;filename="{}"'.format(name)
     except:
         return HttpResponse("Sorry but Not Found the File")
@@ -229,13 +228,12 @@ def xgmm(request):
             return render(request, 'user/xgmm_cg.html', {"status": 0, "msg": "原密码不正确，请重新输入"})
         user.update(password=pwd)
         request.session.flush()
-        # 提醒修改成功，渲染页面
+
         return render(request, 'user/xgmm_cg.html', {"status": 1, "msg": "原密码不正确，请重新输入"})
 
 
 @islogin
 def photo(request, pageindex):
-    # 接受跳转输入的页数
     input_page = request.GET.get("input_page")
     if input_page:
         pageindex = int(input_page)
@@ -243,12 +241,11 @@ def photo(request, pageindex):
     user_id = request.session.get('id')
     if pageindex == '':
         pageindex = '1'
-    # 查询采纳的创意
+
     list1 = Photo.objects.filter(user_id=user_id, status=1).filter(Q(class_id="")).order_by('-id')
-    # 创建一个paginator对象
+
     paginator = Paginator(list1, 9)
 
-    # 获取最后一页的页码
     last_page = len(paginator.page_range)
 
     if int(pageindex) > last_page:
@@ -294,14 +291,12 @@ def delete_photo(request):
 
     Photo.objects.filter(id=id).update(status=0)
     list1 = Photo.objects.filter(user_id=user_id, status=1).order_by('-id')
-    # 创建一个paginator对象
     paginator = Paginator(list1, 9)
     last_page = len(paginator.page_range)
     if int(page_num) > last_page:
         page_num = last_page
     if int(page_num) <= 0:
         page_num = 1
-    # 获取最后一页的页码
     last_page = len(paginator.page_range)
     page = paginator.page(int(page_num))
 
@@ -311,7 +306,6 @@ def delete_photo(request):
 
 @islogin
 def school_photo(request, pageindex):
-    # 接受跳转输入的页数
     input_page = request.GET.get("input_page")
     if input_page:
         pageindex = int(input_page)
@@ -320,15 +314,13 @@ def school_photo(request, pageindex):
     if not class_id:
         return render(request, 'user/class_photo.html',
                       {'now_page': pageindex, 'last': 1, 'sign': "认识你真好"})
-    print('>>>>>>>>>>>>>>>>>>>>>>>>', class_id)
     if pageindex == '':
         pageindex = '1'
-    # 查询采纳的创意
+
     list1 = Photo.objects.filter(class_id=class_id, status=1).order_by('-id')
-    # 创建一个paginator对象
+
     paginator = Paginator(list1, 9)
 
-    # 获取最后一页的页码
     last_page = len(paginator.page_range)
 
     if int(pageindex) > last_page:
@@ -347,6 +339,9 @@ def class_upload(request):
     user_id = request.session.get('id')
     username = request.session.get('username')
     class_id = request.session.get('class_id')
+    if not ClassInfo.objects.filter(id=class_id).exists():
+        return JsonResponse({"status": 0, "msg": "请联系管理员绑定班级！"})
+
     fls = request.FILES.values()
     status = -1
     msg = "请选择上传的照片！"
@@ -373,24 +368,20 @@ def delete_class_photo(request):
     page_num = request.GET.get("page")
     class_id = request.session.get('class_id')
 
-    status = 1
-    msg = "success"
     Photo.objects.filter(id=id, class_id=class_id).update(status=0)
     list1 = Photo.objects.filter(class_id=class_id, status=1).order_by('-id')
-    # 创建一个paginator对象
+
     paginator = Paginator(list1, 9)
     last_page = len(paginator.page_range)
     if int(page_num) > last_page:
         page_num = last_page
     if int(page_num) <= 0:
         page_num = 1
-    # 获取最后一页的页码
     last_page = len(paginator.page_range)
     page = paginator.page(int(page_num))
 
     return render(request, 'user/class_photo.html',
                   {'page': page, 'now_page': page_num, 'last': last_page, 'sign': "认识你真好", "tk": True})
-    # return JsonResponse({"status": status, "msg": msg})
 
 
 @islogin
@@ -422,7 +413,7 @@ def user_center(request, pageindex):
 
     return render(request, 'user/user_center.html',
                   {'page': page, 'last': last_page, 'username': username, 'class_num': class_num,
-                   'school_name': school_name, 'sign': sign})
+                   'school_name': school_name, 'sign': sign, 'now_page': pageindex})
 
 
 def update_sign(request):
@@ -451,11 +442,10 @@ def school_conment(request, pageindex):
     if input_page:
         pageindex = int(input_page)
 
-    user_id = request.session.get('id')
     class_id = request.session.get('class_id')
     if pageindex == '':
         pageindex = '1'
-    list1 = SchoolComment.objects.filter(user_id=user_id, status=1, class_id=class_id).order_by('-id')
+    list1 = SchoolComment.objects.filter(status=1, class_id=class_id).order_by('-id')
     paginator = Paginator(list1, 10)
 
     last_page = len(paginator.page_range)
@@ -495,10 +485,13 @@ def update_school_comment(request):
         username = request.session.get('username')
         user_id = request.session.get('id')
         class_id = request.session.get('class_id')
+        if ClassInfo.objects.filter(id=class_id).exists():
+            status = 1
 
-        SchoolComment.objects.create(user_id=user_id, class_id=class_id, comment=comment, user_name=username)
-
-        return JsonResponse({"status": 1})
+            SchoolComment.objects.create(user_id=user_id, class_id=class_id, comment=comment, user_name=username)
+        else:
+            status = 0
+        return JsonResponse({"status": status})
 
 
 @islogin
@@ -567,7 +560,6 @@ def query(request, pageindex):
                 comment = ""
                 status = 0
 
-            print('----------------', school)
             return render(request, 'user/query.html',
                           {"school_name": school_name, "comment": comment, "status": status, "query_type": query_type})
         elif query_type == "班级":
